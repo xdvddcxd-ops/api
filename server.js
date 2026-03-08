@@ -21,11 +21,13 @@ function runYtDlp(args) {
     });
 
     proc.on("close", (code) => {
+
       if (code !== 0) {
-        reject(error);
+        reject(error || "yt-dlp failed");
       } else {
         resolve(data.trim());
       }
+
     });
 
   });
@@ -34,19 +36,21 @@ function runYtDlp(args) {
 const cookiePath = path.join(__dirname, "cookies.txt");
 
 const baseArgs = [
-  "--cookies",
-  cookiePath,
+  "--cookies", cookiePath,
   "--no-playlist",
   "--no-warnings",
+  "--geo-bypass",
   "--extractor-args",
   "youtube:player_client=android,web_safari"
 ];
 
 app.get("/", (req, res) => {
+
   res.json({
     status: true,
     message: "YouTube API running"
   });
+
 });
 
 app.get("/ytmp4", async (req, res) => {
@@ -65,7 +69,7 @@ app.get("/ytmp4", async (req, res) => {
     const link = await runYtDlp([
       ...baseArgs,
       "-f",
-      "b",
+      "bv*+ba/b",
       "-g",
       url
     ]);
@@ -102,7 +106,7 @@ app.get("/ytmp3", async (req, res) => {
     const link = await runYtDlp([
       ...baseArgs,
       "-f",
-      "ba",
+      "bestaudio/b",
       "-g",
       url
     ]);
@@ -161,5 +165,7 @@ app.get("/ytinfo", async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+
   console.log("Server running on port " + PORT);
+
 });
