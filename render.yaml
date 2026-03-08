@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: dvyer-api
+    runtime: node
+    buildCommand: "npm install && bash build.sh"
+    startCommand: "npm start"
