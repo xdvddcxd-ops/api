@@ -1,6 +1,2 @@
-#!/bin/bash
-
-apt-get update
-apt-get install -y ffmpeg python3 python3-pip
-
-pip3 install -U yt-dlp
+pip install --upgrade pip
+pip install yt-dlp
