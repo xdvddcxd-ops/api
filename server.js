@@ -4,32 +4,28 @@ const path = require("path");
 
 const app = express();
 
-app.use(express.static("public"));
-
 function runYtDlp(args) {
   return new Promise((resolve, reject) => {
 
     const proc = spawn("yt-dlp", args);
 
     let data = "";
-    let err = "";
+    let error = "";
 
     proc.stdout.on("data", (chunk) => {
       data += chunk.toString();
     });
 
     proc.stderr.on("data", (chunk) => {
-      err += chunk.toString();
+      error += chunk.toString();
     });
 
     proc.on("close", (code) => {
-
       if (code !== 0) {
-        reject(err);
+        reject(error);
       } else {
         resolve(data.trim());
       }
-
     });
 
   });
@@ -38,49 +34,74 @@ function runYtDlp(args) {
 const cookiePath = path.join(__dirname, "cookies.txt");
 
 const baseArgs = [
-  "--cookies", cookiePath,
+  "--cookies",
+  cookiePath,
   "--no-playlist",
-  "--geo-bypass",
-  "--no-warnings",
-  "--extractor-args",
-  "youtube:player_client=android,web_safari"
+  "--no-warnings"
 ];
 
+app.use(express.static("public"));
+
+app.get("/", (req, res) => {
+  res.json({
+    status: true,
+    message: "YouTube API running"
+  });
+});
+
+
+// MP4
 app.get("/api/mp4", async (req, res) => {
 
   try {
 
     const url = req.query.url;
 
+    if (!url) {
+      return res.json({
+        status: false,
+        error: "Missing url"
+      });
+    }
+
     const link = await runYtDlp([
       ...baseArgs,
       "-f",
-      "best[ext=mp4]/best",
+      "bestvideo+bestaudio/best",
       "-g",
       url
     ]);
 
     res.json({
       status: true,
-      url: link
+      result: link.split("\n")
     });
 
-  } catch (e) {
+  } catch (err) {
 
     res.json({
       status: false,
-      error: String(e)
+      error: String(err)
     });
 
   }
 
 });
 
+
+// MP3
 app.get("/api/mp3", async (req, res) => {
 
   try {
 
     const url = req.query.url;
+
+    if (!url) {
+      return res.json({
+        status: false,
+        error: "Missing url"
+      });
+    }
 
     const link = await runYtDlp([
       ...baseArgs,
@@ -92,25 +113,34 @@ app.get("/api/mp3", async (req, res) => {
 
     res.json({
       status: true,
-      url: link
+      result: link
     });
 
-  } catch (e) {
+  } catch (err) {
 
     res.json({
       status: false,
-      error: String(e)
+      error: String(err)
     });
 
   }
 
 });
 
+
+// INFO
 app.get("/api/info", async (req, res) => {
 
   try {
 
     const url = req.query.url;
+
+    if (!url) {
+      return res.json({
+        status: false,
+        error: "Missing url"
+      });
+    }
 
     const info = await runYtDlp([
       ...baseArgs,
@@ -118,13 +148,16 @@ app.get("/api/info", async (req, res) => {
       url
     ]);
 
-    res.json(JSON.parse(info));
+    res.json({
+      status: true,
+      result: JSON.parse(info)
+    });
 
-  } catch (e) {
+  } catch (err) {
 
     res.json({
       status: false,
-      error: String(e)
+      error: String(err)
     });
 
   }
@@ -134,7 +167,5 @@ app.get("/api/info", async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-
   console.log("Server running on port " + PORT);
-
 });
