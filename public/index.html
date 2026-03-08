@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>YouTube Downloader</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#0f172a;
+color:white;
+text-align:center;
+padding:50px;
+}
+
+input{
+width:60%;
+padding:10px;
+font-size:16px;
+}
+
+button{
+padding:10px 20px;
+margin:10px;
+font-size:16px;
+cursor:pointer;
+}
+
+.result{
+margin-top:30px;
+}
+
+a{
+color:#22c55e;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>YouTube Downloader</h1>
+
+<p>Pega un enlace de YouTube</p>
+
+<input id="url" placeholder="https://youtube.com/watch?v=...">
+
+<br>
+
+<button onclick="mp4()">MP4</button>
+<button onclick="mp3()">MP3</button>
+<button onclick="info()">Info</button>
+
+<div class="result" id="result"></div>
+
+<script>
+
+async function mp4(){
+
+let url=document.getElementById("url").value
+
+let res=await fetch("/api/mp4?url="+encodeURIComponent(url))
+
+let data=await res.json()
+
+document.getElementById("result").innerHTML=
+data.status?
+'<a href="'+data.url+'" target="_blank">Download MP4</a>':
+data.error
+
+}
+
+async function mp3(){
+
+let url=document.getElementById("url").value
+
+let res=await fetch("/api/mp3?url="+encodeURIComponent(url))
+
+let data=await res.json()
+
+document.getElementById("result").innerHTML=
+data.status?
+'<a href="'+data.url+'" target="_blank">Download MP3</a>':
+data.error
+
+}
+
+async function info(){
+
+let url=document.getElementById("url").value
+
+let res=await fetch("/api/info?url="+encodeURIComponent(url))
+
+let data=await res.json()
+
+document.getElementById("result").innerHTML=
+"<pre>"+JSON.stringify(data,null,2)+"</pre>"
+
+}
+
+</script>
+
+</body>
+</html>
