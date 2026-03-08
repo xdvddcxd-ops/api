@@ -32,41 +32,93 @@ app.get("/", (req,res)=>{
 
 app.get("/ytmp4", async (req,res)=>{
   const { url } = req.query;
-  if(!url) return res.status(400).json({status:false,error:"Missing url"});
+
+  if(!url){
+    return res.status(400).json({
+      status:false,
+      error:"Missing url"
+    });
+  }
 
   try{
-    const link = await runYtDlp(["-f","best","-g",url]);
-    res.json({status:true,download:link});
+
+    const link = await runYtDlp(["-f","b","-g",url]);
+
+    res.json({
+      status:true,
+      download:link
+    });
+
   }catch(e){
-    res.status(500).json({status:false,error:String(e)});
+
+    res.status(500).json({
+      status:false,
+      error:String(e)
+    });
+
   }
+
 });
 
 app.get("/ytmp3", async (req,res)=>{
   const { url } = req.query;
-  if(!url) return res.status(400).json({status:false,error:"Missing url"});
+
+  if(!url){
+    return res.status(400).json({
+      status:false,
+      error:"Missing url"
+    });
+  }
 
   try{
-    const link = await runYtDlp(["-f","bestaudio","-g",url]);
-    res.json({status:true,download:link});
+
+    const link = await runYtDlp(["-f","ba","-g",url]);
+
+    res.json({
+      status:true,
+      download:link
+    });
+
   }catch(e){
-    res.status(500).json({status:false,error:String(e)});
+
+    res.status(500).json({
+      status:false,
+      error:String(e)
+    });
+
   }
+
 });
 
 app.get("/ytinfo", async (req,res)=>{
   const { url } = req.query;
-  if(!url) return res.status(400).json({status:false,error:"Missing url"});
+
+  if(!url){
+    return res.status(400).json({
+      status:false,
+      error:"Missing url"
+    });
+  }
 
   try{
+
     const info = await runYtDlp(["-J",url]);
+
     res.json(JSON.parse(info));
+
   }catch(e){
-    res.status(500).json({status:false,error:String(e)});
+
+    res.status(500).json({
+      status:false,
+      error:String(e)
+    });
+
   }
+
 });
 
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, ()=>{
   console.log("Server running on port " + PORT);
 });
