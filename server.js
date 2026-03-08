@@ -1,10 +1,12 @@
 const express = require("express");
 const { spawn } = require("child_process");
+const path = require("path");
 
 const app = express();
 
 function runYtDlp(args) {
   return new Promise((resolve, reject) => {
+
     const proc = spawn("yt-dlp", args);
 
     let data = "";
@@ -25,14 +27,19 @@ function runYtDlp(args) {
         resolve(data.trim());
       }
     });
+
   });
 }
 
+const cookiePath = path.join(__dirname, "cookies.txt");
+
 const baseArgs = [
+  "--cookies",
+  cookiePath,
   "--no-playlist",
   "--no-warnings",
   "--extractor-args",
-  "youtube:player_client=android"
+  "youtube:player_client=android,web_safari"
 ];
 
 app.get("/", (req, res) => {
@@ -43,7 +50,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/ytmp4", async (req, res) => {
+
   try {
+
     const url = req.query.url;
 
     if (!url) {
@@ -67,14 +76,18 @@ app.get("/ytmp4", async (req, res) => {
     });
 
   } catch (err) {
+
     res.json({
       status: false,
       error: String(err)
     });
+
   }
+
 });
 
 app.get("/ytmp3", async (req, res) => {
+
   try {
 
     const url = req.query.url;
@@ -100,14 +113,18 @@ app.get("/ytmp3", async (req, res) => {
     });
 
   } catch (err) {
+
     res.json({
       status: false,
       error: String(err)
     });
+
   }
+
 });
 
 app.get("/ytinfo", async (req, res) => {
+
   try {
 
     const url = req.query.url;
@@ -131,11 +148,14 @@ app.get("/ytinfo", async (req, res) => {
     });
 
   } catch (err) {
+
     res.json({
       status: false,
       error: String(err)
     });
+
   }
+
 });
 
 const PORT = process.env.PORT || 3000;
