@@ -1,12 +1,11 @@
 {
-  "name": "yt-api",
-  "version": "1.0.0",
-  "description": "YouTube API using yt-dlp",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.19.2"
-  }
+ "name": "yt-api",
+ "version": "1.0.0",
+ "main": "server.js",
+ "scripts": {
+   "start": "node server.js"
+ },
+ "dependencies": {
+   "express": "^4.19.2"
+ }
 }
